@@ -15,8 +15,8 @@
  */
 package com.jagrosh.giveawaybot.util;
 
-import com.jagrosh.giveawaybot.Constants;
 import java.util.Objects;
+import com.jagrosh.giveawaybot.Constants;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.Command.Category;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -24,14 +24,14 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 /**
  *
  * This file contains utility methods to help with formatting output.
- * 
+ *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
 public class FormatUtil {
     public static String pluralise(long x, String singular, String plural) {
         return x == 1 ? singular : plural;
     }
-    
+
     public static String formatHelp(CommandEvent event)
     {
         StringBuilder builder = new StringBuilder(Constants.YAY+" __**"+event.getSelfUser().getName()+"** commands:__\n");
@@ -55,7 +55,7 @@ public class FormatUtil {
                     + "\nFor additional help, contact "+Constants.OWNER+" or check out "+Constants.WEBSITE);
         return builder.toString();
     }
-    
+
     public static String secondsToTime(long timeseconds)
     {
         StringBuilder builder = new StringBuilder();

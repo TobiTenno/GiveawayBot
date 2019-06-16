@@ -110,17 +110,17 @@ public class Bot extends ListenerAdapter
     {
         return shards;
     }
-    
+
     public ScheduledExecutorService getThreadpool()
     {
         return threadpool;
     }
-    
+
     public WebhookClient getWebhook()
     {
         return webhook;
     }
-    
+
     public Database getDatabase()
     {
         return database;
@@ -133,7 +133,7 @@ public class Bot extends ListenerAdapter
         shards.shutdown();
         database.shutdown();
     }
-    
+
     public boolean startGiveaway(TextChannel channel, Instant now, int seconds, int winners, String prize)
     {
         if(!Constants.canSendGiveaway(channel))
@@ -147,7 +147,7 @@ public class Bot extends ListenerAdapter
         }, v -> LOG.warn("Unable to start giveaway: "+v));
         return true;
     }
-    
+
     public boolean deleteGiveaway(long channelId, long messageId)
     {
         TextChannel channel = shards.getTextChannelById(channelId);
@@ -158,7 +158,7 @@ public class Bot extends ListenerAdapter
         catch(Exception ignore) {}
         return database.giveaways.deleteGiveaway(messageId);
     }
-    
+
     // events
     @Override
     public void onRoleUpdateColor(RoleUpdateColorEvent event)
@@ -188,7 +188,7 @@ public class Bot extends ListenerAdapter
                 +event.getJDA().getShardInfo().getShardTotal()+"` has connected. Guilds: `"
                 +event.getJDA().getGuilds().size()+"` Users: `"+event.getJDA().getUsers().size()+"`");
     }
-    
+
     /**
      * Starts the application in Bot mode
      * @param shardTotal 
@@ -205,7 +205,7 @@ public class Bot extends ListenerAdapter
                                        config.getString("database.username"), 
                                        config.getString("database.password")), 
                           config.getString("webhook"));
-        
+
         // instantiate an event waiter
         EventWaiter waiter = new EventWaiter(Executors.newSingleThreadScheduledExecutor(), false);
         
@@ -213,21 +213,21 @@ public class Bot extends ListenerAdapter
         CommandClient client = new CommandClientBuilder()
                 .setPrefix("!g")
                 .setAlternativePrefix("g!")
-                .setOwnerId("113156185389092864")
+                .setOwnerId(Constants.OWNER_ID)
                 .setGame(Game.playing(Constants.TADA+" "+Constants.WEBSITE+" "+Constants.TADA+" Type !ghelp "+Constants.TADA))
                 .setEmojis(Constants.TADA, Constants.WARNING, Constants.ERROR)
                 //.setServerInvite("https://discordapp.com/invite/0p9LSGoRLu6Pet0k")
                 .setHelpConsumer(event -> event.replyInDm(FormatUtil.formatHelp(event), 
                         m-> event.getMessage().addReaction(Constants.REACTION).queue(s->{},f->{}), 
                         f-> event.replyWarning("Help could not be sent because you are blocking Direct Messages")))
-                .setDiscordBotsKey(config.getString("listing.discord-bots"))
-                .setCarbonitexKey(config.getString("listing.carbon"))
+                // .setDiscordBotsKey(config.getString("listing.discord-bots"))
+                // .setCarbonitexKey(config.getString("listing.carbon"))
                 //.setDiscordBotListKey(tokens.get(6))
                 .addCommands(
                         new AboutCommand(bot),
                         new InviteCommand(),
                         new PingCommand(),
-                        
+
                         new CreateCommand(bot,waiter),
                         new StartCommand(bot),
                         new EndCommand(bot),
@@ -239,9 +239,9 @@ public class Bot extends ListenerAdapter
                         new EvalCommand(bot),
                         new ShutdownCommand(bot)
                 ).build();
-        
+
         bot.getWebhook().send(Constants.TADA + " Starting shards `"+(shardSetId*shardSetSize + 1) + " - " + ((shardSetId+1)*shardSetSize) + "` of `"+shardTotal+"`...");
-        
+
         // start logging in
         bot.setShardManager(new DefaultShardManagerBuilder()
                 .setShardsTotal(shardTotal)

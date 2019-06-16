@@ -31,6 +31,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import com.jagrosh.giveawaybot.Constants;
+
 /**
  *
  * @author John Grosh (john.a.grosh@gmail.com)
@@ -42,47 +44,47 @@ public class GiveawayManager extends DataManager
     public final static SQLColumn<Long>    MESSAGE_ID  = new LongColumn   ("MESSAGE_ID",  false, 0L, true);
     public final static SQLColumn<Instant> END_TIME    = new InstantColumn("END_TIME",    false, Instant.MIN);
     public final static SQLColumn<Integer> NUM_WINNERS = new IntegerColumn("NUM_WINNERS", false, 1);
-    public final static SQLColumn<String>  PRIZE       = new StringColumn ("PRIZE",       true,  null, 250);
+    public final static SQLColumn<String>  PRIZE       = new StringColumn ("PRIZE",       true,  null, Constants.PRIZE_MAX);
     public final static SQLColumn<Integer> STATUS      = new IntegerColumn("STATUS",      false, Status.RUN.ordinal());
-    
+
     public GiveawayManager(Database connector)
     {
         super(connector, "GIVEAWAYS");
     }
-    
+
     public Giveaway getGiveaway(long messageId, long guildId)
     {
-        return read(selectAll(MESSAGE_ID.is(messageId)), results -> 
+        return read(selectAll(MESSAGE_ID.is(messageId)), results ->
         {
             if(results.next() && GUILD_ID.getValue(results)==guildId)
                 return giveaway(results);
             return null;
         });
     }
-    
+
     public List<Giveaway> getGiveaways()
     {
         return getGiveaways(selectAll());
     }
-    
+
     public List<Giveaway> getGiveaways(TextChannel channel)
     {
         return getGiveaways(selectAll(CHANNEL_ID.is(channel.getIdLong())));
     }
-    
+
     public List<Giveaway> getGiveaways(Guild guild)
     {
         return getGiveaways(selectAll(GUILD_ID.is(guild.getIdLong())));
     }
-    
+
     public List<Giveaway> getGiveaways(Status status)
     {
         return getGiveaways(selectAll(STATUS.is(status.ordinal())));
     }
-    
+
     private List<Giveaway> getGiveaways(String selection)
     {
-        return read(selection, results -> 
+        return read(selection, results ->
         {
             List<Giveaway> list = new LinkedList<>();
             while(results.next())
@@ -90,20 +92,20 @@ public class GiveawayManager extends DataManager
             return list;
         }, null);
     }
-    
+
     public List<Giveaway> getGiveawaysEndingBefore(Instant end)
     {
         return getGiveaways(selectAll(END_TIME.isLessThan(end.getEpochSecond()) + " AND " + STATUS.is(Status.RUN.ordinal())));
     }
-    
+
     public boolean createGiveaway(Message message, Instant end, int winners, String prize)
     {
         return createGiveaway(message.getGuild().getIdLong(), message.getTextChannel().getIdLong(), message.getIdLong(), end, winners, prize);
     }
-    
+
     public boolean createGiveaway(long guildid, long channelid, long messageid, Instant end, int winners, String prize)
     {
-        return readWrite(selectAll(MESSAGE_ID.is(messageid)), results -> 
+        return readWrite(selectAll(MESSAGE_ID.is(messageid)), results ->
         {
             if(results.next())
             {
@@ -132,10 +134,10 @@ public class GiveawayManager extends DataManager
             }
         }, false);
     }
-    
+
     public boolean deleteGiveaway(long messageId)
     {
-        return readWrite(selectAll(MESSAGE_ID.is(messageId)), results -> 
+        return readWrite(selectAll(MESSAGE_ID.is(messageId)), results ->
         {
             if(results.next())
             {
@@ -146,10 +148,10 @@ public class GiveawayManager extends DataManager
                 return true;
         }, false);
     }
-    
+
     public boolean setStatus(long messageId, Status status)
     {
-        return readWrite(selectAll(MESSAGE_ID.is(messageId)), results -> 
+        return readWrite(selectAll(MESSAGE_ID.is(messageId)), results ->
         {
             if(results.next())
             {
@@ -161,10 +163,10 @@ public class GiveawayManager extends DataManager
                 return false;
         }, false);
     }
-    
+
     private static Giveaway giveaway(ResultSet results) throws SQLException
     {
-        return new Giveaway(MESSAGE_ID.getValue(results), CHANNEL_ID.getValue(results), GUILD_ID.getValue(results), 
+        return new Giveaway(MESSAGE_ID.getValue(results), CHANNEL_ID.getValue(results), GUILD_ID.getValue(results),
                         END_TIME.getValue(results), NUM_WINNERS.getValue(results), PRIZE.getValue(results), Status.values()[STATUS.getValue(results)]);
     }
 }
