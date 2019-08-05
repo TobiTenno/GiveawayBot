@@ -54,6 +54,7 @@ public class Constants {
     public static final String VERSION  = "2.3";
     public static final String PERMS    = "`Read Messages`, `Write Messages`, `Read Message History`, `Embed Links`, `Use External Emoji`, and `Add Reactions`";
     public static final String OWNER_ID = config.getString("owner.id");
+    public static final boolean MAX_PER_CHANNEL = config.getBoolean("perChannelMaxGiveaways");
 
     public static final boolean canSendGiveaway(TextChannel channel)
     {

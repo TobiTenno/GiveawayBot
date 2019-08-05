@@ -23,18 +23,18 @@ import com.jagrosh.giveawaybot.Constants;
  */
 public enum PremiumLevel
     {
-        NONE   (0, "None",          60*60*24*7*2, 20, 20, false, 0L),
+        NONE   (0, "None",          Constants.MAX_TIME, Constants.MAX_WINNERS, Constants.MAX_GIVEAWAYS, Constants.MAX_PER_CHANNEL, 0L),
         BOOST  (1, "Nitro Booster", 60*60*24*7*4, 30, 25, true,  585981877396045826L),
         PATRON (2, "Patron",        60*60*24*7*4, 30, 25, true,  585689274565918721L),
         DONATOR(3, "Donator",       60*60*24*7*4, 30, 25, true,  585708901270421504L);
-        
+
         public final int level;
         public final String name;
         public final int maxTime, maxWinners, maxGiveaways;
         public final boolean perChannelMaxGiveaways;
         public final long roleId;
-        
-        private PremiumLevel(int level, String name, int maxTime, int maxWinners, 
+
+        private PremiumLevel(int level, String name, int maxTime, int maxWinners,
                 int maxGiveaways, boolean perChannelMaxGiveaways, long roleId)
         {
             this.level = level;
@@ -45,17 +45,17 @@ public enum PremiumLevel
             this.perChannelMaxGiveaways = perChannelMaxGiveaways;
             this.roleId = roleId;
         }
-        
+
         public boolean isValidTime(int seconds)
         {
             return seconds >= Constants.MIN_TIME && seconds <= maxTime;
         }
-        
+
         public boolean isValidWinners(int winners)
         {
             return winners >= 1 && winners <= maxWinners;
         }
-        
+
         // static methods
         public static PremiumLevel get(int level)
         {
